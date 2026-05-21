@@ -1739,7 +1739,7 @@ body.light-theme .active-tag-card {
   }
 }
 
-body.light-theme @keyframes pulse-dot {
+@keyframes pulse-dot-light {
   0% { 
     transform: scale(0.85); 
     box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.7); 
@@ -1752,6 +1752,11 @@ body.light-theme @keyframes pulse-dot {
     transform: scale(0.85); 
     box-shadow: 0 0 0 0 rgba(15, 118, 110, 0); 
   }
+}
+
+body.light-theme .active-tag-inline::before,
+body.light-theme .active-tag-card::before {
+  animation: pulse-dot-light 1.5s infinite ease-in-out;
 }
 
 /* Cascading Page Card Entrance Animation */

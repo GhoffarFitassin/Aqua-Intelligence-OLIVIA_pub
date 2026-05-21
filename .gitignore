@@ -1,0 +1,7 @@
+node_modules/
+dist/
+FrontEnd/node_modules/
+FrontEnd/dist/
+.vercel/
+.env*
+*.local
