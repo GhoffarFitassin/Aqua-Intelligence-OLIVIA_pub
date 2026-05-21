@@ -8,6 +8,7 @@ import HomeTab from './components/HomeTab';
 import PondsTab from './components/PondsTab';
 import AnalyticsTab from './components/AnalyticsTab';
 import ProfileTab from './components/ProfileTab';
+import Auth from './components/Auth';
 import { 
   Play, 
   Pause, 
@@ -20,6 +21,22 @@ import {
 } from 'lucide-react';
 
 function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem('aqua_current_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    localStorage.setItem('aqua_current_user', JSON.stringify(user));
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('aqua_current_user');
+    setActiveTab('dashboard');
+  };
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedPondId, setSelectedPondId] = useState(12);
   const [rawData, setRawData] = useState([]);
@@ -229,7 +246,24 @@ function App() {
       case 'analytics':
         return <AnalyticsTab currentData={currentData} theme={theme} />;
       case 'profile':
-        return <ProfileTab theme={theme} toggleTheme={toggleTheme} />;
+        return (
+          <ProfileTab 
+            theme={theme} 
+            toggleTheme={toggleTheme} 
+            currentUser={currentUser} 
+            onLogout={handleLogout}
+            onProfileUpdate={(updatedUser) => {
+              setCurrentUser(updatedUser);
+              localStorage.setItem('aqua_current_user', JSON.stringify(updatedUser));
+              // Update user info in the users list
+              const users = JSON.parse(localStorage.getItem('aqua_users') || '[]');
+              const updatedUsers = users.map(u => 
+                u.email.toLowerCase() === updatedUser.email.toLowerCase() ? updatedUser : u
+              );
+              localStorage.setItem('aqua_users', JSON.stringify(updatedUsers));
+            }}
+          />
+        );
       case 'dashboard':
       default:
         return currentData ? (
@@ -317,6 +351,10 @@ function App() {
         );
     }
   };
+
+  if (!currentUser) {
+    return <Auth onLoginSuccess={handleLoginSuccess} theme={theme} />;
+  }
 
   return (
     <div className="app-container">
