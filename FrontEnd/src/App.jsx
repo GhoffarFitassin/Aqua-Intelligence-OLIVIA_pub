@@ -1,0 +1,410 @@
+import { useState, useEffect } from 'react';
+import Papa from 'papaparse';
+import Sidebar from './components/Sidebar';
+import RightPanel from './components/RightPanel';
+import MetricCharts from './components/MetricCharts';
+import Timeline from './components/Timeline';
+import HomeTab from './components/HomeTab';
+import PondsTab from './components/PondsTab';
+import AnalyticsTab from './components/AnalyticsTab';
+import ProfileTab from './components/ProfileTab';
+import { 
+  Play, 
+  Pause, 
+  SkipForward, 
+  RotateCcw, 
+  AlertTriangle, 
+  CheckCircle2, 
+  AlertCircle,
+  TrendingUp
+} from 'lucide-react';
+
+function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedPondId, setSelectedPondId] = useState(12);
+  const [rawData, setRawData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentMetricType, setCurrentMetricType] = useState('DO');
+  const [todos, setTodos] = useState([]);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'dark';
+  });
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => {
+      const nextTheme = prevTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', nextTheme);
+      return nextTheme;
+    });
+  };
+
+  useEffect(() => {
+    document.body.className = theme === 'light' ? 'light-theme' : 'dark-theme';
+  }, [theme]);
+
+  // Load and parse the CSV data
+  useEffect(() => {
+    // Reset simulation index and playing state on pond change
+    setCurrentIndex(0);
+    setIsPlaying(false);
+
+    fetch(`/datasets/IoTPond${selectedPondId}.csv`)
+      .then((response) => response.text())
+      .then((csvText) => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            // Clean up and normalize properties
+            const cleanedData = results.data.map((row) => {
+              const getVal = (keys) => {
+                for (const key of keys) {
+                  if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
+                    const parsed = parseFloat(row[key]);
+                    if (!isNaN(parsed)) return parsed;
+                  }
+                }
+                return 0;
+              };
+              
+              const getIntVal = (keys) => {
+                for (const key of keys) {
+                  if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
+                    const parsed = parseInt(row[key], 10);
+                    if (!isNaN(parsed)) return parsed;
+                  }
+                }
+                return 0;
+              };
+
+              return {
+                created_at: row.created_at || '',
+                entry_id: row.entry_id || '',
+                TEMPERATURE: getVal(['TEMPERATURE', 'Temperature (C)']),
+                TURBIDITY: getVal(['TURBIDITY', 'Turbidity (NTU)']),
+                DO: getVal(['DISOLVED OXYGEN', 'Dissolved Oxygen(g/ml)', 'DO']),
+                pH: getVal(['pH', 'PH']),
+                AMMONIA: getVal(['AMMONIA', 'Ammonia(g/ml)']),
+                NITRATE: getVal(['NITRATE', 'Nitrate(g/ml)']),
+                Population: getIntVal(['Population']),
+                Length: getVal(['Length', 'Fish_Length (cm)']),
+                Weight: getVal(['Weight', 'Fish_Weight (g)'])
+              };
+            });
+            setRawData(cleanedData);
+          }
+        });
+      })
+      .catch((error) => console.error('Error fetching CSV:', error));
+  }, [selectedPondId]);
+
+  const currentData = rawData[currentIndex] || null;
+
+  // AI Decision Logic (Decision Support System based on AGENTS.md rules)
+  const getPondStatus = () => {
+    if (!currentData) return { type: 'success', text: 'Mengambil data...', title: 'SEDANG MEMUAT' };
+
+    const doVal = currentData.DO;
+    const ammoniaVal = currentData.AMMONIA;
+    const tempVal = currentData.TEMPERATURE;
+    const nitrateVal = currentData.NITRATE;
+    const pHVal = currentData.pH;
+
+    // Skenario A: DO rendah (hypoxia) ATAU Ammonia kritis
+    if (doVal <= 2.0 || ammoniaVal > 0.0005) {
+      return {
+        type: 'danger',
+        title: '🔴 BAHAYA KRITIS',
+        text: 'Oksigen (DO) drop atau tingkat Ammonia/Nitrat beracun! Nyalakan aerator darurat segera.',
+        actionList: [
+          { id: 1, text: `Segera hidupkan aerator maksimal di Kolam ${selectedPondId}.`, checked: false },
+          { id: 2, text: 'Lakukan pergantian air (Sifon) dasar kolam sebesar 30%.', checked: false },
+          { id: 3, text: 'Puasakan ikan (jangan beri pakan) selama 24 jam untuk menekan amonia.', checked: false }
+        ]
+      };
+    }
+
+    // Skenario B: Suhu dingin/fluktuatif (potensi Upwelling) ATAU pH asam
+    if (tempVal < 27.05 || pHVal < 6.05 || nitrateVal > 250) {
+      return {
+        type: 'warning',
+        title: '🟡 WASPADA UPWELLING',
+        text: 'Suhu dingin atau pH asam terdeteksi. Risiko kotoran naik dari dasar kolam.',
+        actionList: [
+          { id: 1, text: 'Periksa penumpukan lumpur organik di dasar kolam.', checked: false },
+          { id: 2, text: 'Taburkan kapur Dolomit secukupnya untuk menaikkan pH.', checked: false },
+          { id: 3, text: 'Pertimbangkan pemberian probiotik air untuk menstabilkan bakteri pengurai.', checked: false }
+        ]
+      };
+    }
+
+    // Skenario C: Normal
+    return {
+      type: 'success',
+      title: '🟢 AMAN & OPTIMAL',
+      text: 'Seluruh parameter kualitas air dalam kondisi prima. Pertumbuhan berjalan normal.',
+      actionList: [
+        { id: 1, text: 'Kondisi kolam sangat baik. Lanjutkan jadwal pakan standar.', checked: false }
+      ]
+    };
+  };
+
+  const statusInfo = getPondStatus();
+
+  // Reset or initialize to-do items whenever the active data point status changes
+  useEffect(() => {
+    if (statusInfo.actionList) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTodos(statusInfo.actionList);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex, statusInfo.type]);
+
+  // Simulation loop
+  useEffect(() => {
+    let intervalId;
+    if (isPlaying && rawData.length > 0) {
+      intervalId = setInterval(() => {
+        setCurrentIndex((prevIndex) => {
+          if (prevIndex >= rawData.length - 1) {
+            setIsPlaying(false);
+            return prevIndex;
+          }
+          return prevIndex + 1;
+        });
+      }, 2000); // Step every 2 seconds
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isPlaying, rawData.length]);
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, checked: !todo.checked } : todo
+      )
+    );
+  };
+
+  // Sliding window of exactly 15 elements to allow smooth chart transitions without squishing
+  const latestRows = rawData.slice(
+    Math.max(0, currentIndex - 14),
+    Math.max(15, currentIndex + 1)
+  );
+
+  const getStatusIcon = (type) => {
+    switch (type) {
+      case 'danger':
+        return <AlertCircle size={24} />;
+      case 'warning':
+        return <AlertTriangle size={24} />;
+      default:
+        return <CheckCircle2 size={24} />;
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <HomeTab 
+            rawData={rawData} 
+            currentData={currentData} 
+            setActiveTab={setActiveTab} 
+            selectedPondId={selectedPondId}
+            setSelectedPondId={setSelectedPondId}
+          />
+        );
+      case 'ponds':
+        return (
+          <PondsTab 
+            currentData={currentData} 
+            selectedPondId={selectedPondId}
+            setSelectedPondId={setSelectedPondId}
+            setActiveTab={setActiveTab}
+          />
+        );
+      case 'analytics':
+        return <AnalyticsTab currentData={currentData} theme={theme} />;
+      case 'profile':
+        return <ProfileTab theme={theme} toggleTheme={toggleTheme} />;
+      case 'dashboard':
+      default:
+        return currentData ? (
+          <>
+            {/* Status Alert Banner */}
+            <div className={`status-banner ${statusInfo.type}`}>
+              <div className="status-banner-content">
+                {getStatusIcon(statusInfo.type)}
+                <div>
+                  <h4>{statusInfo.title}</h4>
+                  <p>{statusInfo.text}</p>
+                </div>
+              </div>
+              <div style={{ fontSize: '11px', opacity: 0.8 }}>
+                Waktu Sensor: {currentData.created_at}
+              </div>
+            </div>
+
+            {/* Quick Metrics Bar */}
+            <div className="metrics-summary">
+              <div className="metric-mini-card">
+                <span className="label">DO (Oxygen)</span>
+                <span className={`value ${currentData.DO <= 2.0 ? 'danger' : 'success'}`}>
+                  {currentData.DO.toFixed(2)} mg/L
+                </span>
+              </div>
+              <div className="metric-mini-card">
+                <span className="label">Ammonia (NH3)</span>
+                <span className={`value ${currentData.AMMONIA > 0.0005 ? 'danger' : 'success'}`}>
+                  {currentData.AMMONIA.toFixed(5)}
+                </span>
+              </div>
+              <div className="metric-mini-card">
+                <span className="label">Suhu Air</span>
+                <span className={`value ${currentData.TEMPERATURE < 27.05 ? 'warning' : 'success'}`}>
+                  {currentData.TEMPERATURE.toFixed(2)}°C
+                </span>
+              </div>
+              <div className="metric-mini-card">
+                <span className="label">Keasaman (pH)</span>
+                <span className={`value ${currentData.pH < 6.05 ? 'warning' : 'success'}`}>
+                  {currentData.pH.toFixed(2)}
+                </span>
+              </div>
+            </div>
+
+            {/* Grid layout */}
+            <div className="cards-grid">
+              
+              {/* Card 1: Content builds trust / Info */}
+              <div className="card card-welcome">
+                <div>
+                  <h3>Performance Pertumbuhan</h3>
+                  <h2>FCR & Pertumbuhan Biometrik Ikan</h2>
+                  <p>
+                    Populasi kolam terpantau <strong>{currentData.Population} ekor</strong> lele. 
+                    Saat ini, rata-rata panjang ikan mencapai <strong>{currentData.Length} cm</strong> dan 
+                    berat mencapai <strong>{currentData.Weight} g</strong>.
+                  </p>
+                </div>
+                <button className="btn-action" onClick={() => setActiveTab('analytics')}>
+                  <TrendingUp size={14} />
+                  <span>Lihat Proyeksi AI</span>
+                </button>
+              </div>
+
+              {/* Card 2 & 3: Donut & Line charts */}
+              <MetricCharts 
+                dataSummary={currentData} 
+                currentMetricType={currentMetricType}
+                setCurrentMetricType={setCurrentMetricType}
+                latestRows={latestRows}
+                theme={theme}
+              />
+
+              {/* Card 4: Timeline / Gantt Chart */}
+              <Timeline currentData={currentData} theme={theme} />
+
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <h2>Memuat data IoT...</h2>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div className="app-container">
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        theme={theme} 
+        toggleTheme={toggleTheme} 
+      />
+      
+      <main className={`main-content ${activeTab !== 'dashboard' ? 'full-width' : ''}`}>
+        {activeTab === 'dashboard' && (
+          <header className="dashboard-header">
+            <div className="dashboard-title">
+              <h1>Aqua-Intelligence OLIVIA</h1>
+              <p>Sistem Deteksi Pencegahan Gagal Panen Lele - Kolam {selectedPondId}</p>
+            </div>
+            
+            <div className="header-controls">
+              {/* Pond Selector */}
+              <div className="pond-select-bar">
+                <span>Pilih Kolam:</span>
+                <select 
+                  value={selectedPondId} 
+                  onChange={(e) => setSelectedPondId(parseInt(e.target.value))}
+                  className="pond-select-dropdown"
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((id) => (
+                    <option key={id} value={id}>
+                      Kolam {id < 10 ? `0${id}` : id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Simulation Controls */}
+              {rawData.length > 0 && (
+                <div className="simulation-bar">
+                  <span>Simulasi IoT:</span>
+                  <button 
+                    className="sim-btn" 
+                    onClick={() => {
+                      setCurrentIndex(0);
+                      setIsPlaying(false);
+                    }}
+                    title="Reset ke awal"
+                  >
+                    <RotateCcw size={14} />
+                  </button>
+                  <button 
+                    className={`sim-btn ${isPlaying ? 'active' : ''}`}
+                    onClick={() => setIsPlaying(!isPlaying)}
+                  >
+                    {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+                  </button>
+                  <button 
+                    className="sim-btn"
+                    onClick={() => {
+                      if (currentIndex < rawData.length - 1) {
+                        setCurrentIndex(currentIndex + 1);
+                      }
+                    }}
+                    disabled={currentIndex >= rawData.length - 1}
+                  >
+                    <SkipForward size={14} />
+                  </button>
+                  <span style={{ fontSize: '11px', fontFamily: 'monospace' }}>
+                    Row: {currentIndex + 1} / {rawData.length}
+                  </span>
+                </div>
+              )}
+            </div>
+          </header>
+        )}
+
+        {renderTabContent()}
+      </main>
+
+      {activeTab === 'dashboard' && (
+        <RightPanel 
+          currentData={currentData} 
+          statusInfo={statusInfo}
+          todos={todos}
+          toggleTodo={toggleTodo}
+        />
+      )}
+    </div>
+  );
+}
+
+export default App;
