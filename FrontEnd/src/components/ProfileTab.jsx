@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { User, Shield, Sliders, Database, Save, CheckCircle, LogOut } from 'lucide-react';
 
-const ProfileTab = ({ theme, toggleTheme, currentUser, onLogout, onProfileUpdate }) => {
+const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, currentUser, onLogout, onProfileUpdate }) => {
   const [farmerName, setFarmerName] = useState(currentUser?.name || 'Pak Fii');
   const [role, setRole] = useState(currentUser?.role || 'Kepala Budidaya (Head Aquaculturist)');
   const [doThreshold, setDoThreshold] = useState(2.0);
@@ -69,24 +69,33 @@ const ProfileTab = ({ theme, toggleTheme, currentUser, onLogout, onProfileUpdate
 
             <div className="form-group" style={{ marginTop: '15px' }}>
               <label>Mode Tampilan</label>
-              <div style={{ display: 'flex', gap: '15px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', gap: '15px', marginTop: '8px', flexWrap: 'wrap' }}>
                 <label className="radio-label">
                   <input
                     type="radio"
-                    name="theme"
-                    checked={theme === 'dark'}
-                    onChange={() => theme !== 'dark' && toggleTheme()}
+                    name="themeSetting"
+                    checked={themeSetting === 'dark'}
+                    onChange={() => onChangeThemeSetting('dark')}
                   />
                   <span>Tema Gelap</span>
                 </label>
                 <label className="radio-label">
                   <input
                     type="radio"
-                    name="theme"
-                    checked={theme === 'light'}
-                    onChange={() => theme !== 'light' && toggleTheme()}
+                    name="themeSetting"
+                    checked={themeSetting === 'light'}
+                    onChange={() => onChangeThemeSetting('light')}
                   />
                   <span>Tema Terang</span>
+                </label>
+                <label className="radio-label">
+                  <input
+                    type="radio"
+                    name="themeSetting"
+                    checked={themeSetting === 'system'}
+                    onChange={() => onChangeThemeSetting('system')}
+                  />
+                  <span>Ikuti Sistem</span>
                 </label>
               </div>
             </div>

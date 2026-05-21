@@ -44,17 +44,44 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentMetricType, setCurrentMetricType] = useState('DO');
   const [todos, setTodos] = useState([]);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'dark';
+  const [themeSetting, setThemeSetting] = useState(() => {
+    return localStorage.getItem('themeSetting') || localStorage.getItem('theme') || 'system';
   });
 
+  const [theme, setTheme] = useState(() => {
+    if (themeSetting === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return themeSetting;
+  });
+
+  const changeThemeSetting = (newSetting) => {
+    setThemeSetting(newSetting);
+    localStorage.setItem('themeSetting', newSetting);
+  };
+
   const toggleTheme = () => {
-    setTheme((prevTheme) => {
-      const nextTheme = prevTheme === 'light' ? 'dark' : 'light';
-      localStorage.setItem('theme', nextTheme);
-      return nextTheme;
+    setThemeSetting((prevSetting) => {
+      const nextSetting = theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('themeSetting', nextSetting);
+      return nextSetting;
     });
   };
+
+  useEffect(() => {
+    if (themeSetting === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e) => {
+        setTheme(e.matches ? 'dark' : 'light');
+      };
+      
+      setTheme(mediaQuery.matches ? 'dark' : 'light');
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else {
+      setTheme(themeSetting);
+    }
+  }, [themeSetting]);
 
   useEffect(() => {
     document.body.className = theme === 'light' ? 'light-theme' : 'dark-theme';
@@ -249,6 +276,8 @@ function App() {
         return (
           <ProfileTab 
             theme={theme} 
+            themeSetting={themeSetting}
+            onChangeThemeSetting={changeThemeSetting}
             toggleTheme={toggleTheme} 
             currentUser={currentUser} 
             onLogout={handleLogout}
