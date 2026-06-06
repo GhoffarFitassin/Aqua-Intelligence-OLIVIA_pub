@@ -17,7 +17,8 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   AlertCircle,
-  TrendingUp
+  TrendingUp,
+  ChevronDown
 } from 'lucide-react';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedPondId, setSelectedPondId] = useState(12);
+  const [isPondDropdownOpen, setIsPondDropdownOpen] = useState(false);
   const [rawData, setRawData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -348,8 +350,8 @@ function App() {
               {/* Card 1: Content builds trust / Info */}
               <div className="card card-welcome">
                 <div>
-                  <h3>Performance Pertumbuhan</h3>
-                  <h2>FCR & Pertumbuhan Biometrik Ikan</h2>
+                  <h3>Performance pertumbuhan.</h3>
+                  <h2>FCR & pertumbuhan biometrik ikan.</h2>
                   <p>
                     Populasi kolam terpantau <strong>{currentData.Population} ekor</strong> lele. 
                     Saat ini, rata-rata panjang ikan mencapai <strong>{currentData.Length} cm</strong> dan 
@@ -390,6 +392,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <div className="mesh-gradient-bg" />
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -397,29 +400,44 @@ function App() {
         toggleTheme={toggleTheme} 
       />
       
-      <main className={`main-content ${activeTab !== 'dashboard' ? 'full-width' : ''}`}>
+      <div className="dashboard-content-wrapper">
+        <main className={`main-content ${activeTab !== 'dashboard' ? 'full-width' : ''}`}>
         {activeTab === 'dashboard' && (
           <header className="dashboard-header">
             <div className="dashboard-title">
-              <h1>Aqua-Intelligence OLIVIA</h1>
-              <p>Sistem Deteksi Pencegahan Gagal Panen Lele - Kolam {selectedPondId}</p>
+              <h1>Lele Dumbo.</h1>
+              <p>Sistem deteksi pencegahan gagal panen lele - Kolam {selectedPondId}.</p>
             </div>
             
             <div className="header-controls">
               {/* Pond Selector */}
               <div className="pond-select-bar">
                 <span>Pilih Kolam:</span>
-                <select 
-                  value={selectedPondId} 
-                  onChange={(e) => setSelectedPondId(parseInt(e.target.value))}
-                  className="pond-select-dropdown"
-                >
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((id) => (
-                    <option key={id} value={id}>
-                      Kolam {id < 10 ? `0${id}` : id}
-                    </option>
-                  ))}
-                </select>
+                <div className="custom-dropdown-container">
+                  <button 
+                    className="custom-dropdown-trigger" 
+                    onClick={() => setIsPondDropdownOpen(!isPondDropdownOpen)}
+                  >
+                    <span>Kolam {selectedPondId < 10 ? `0${selectedPondId}` : selectedPondId}</span>
+                    <ChevronDown size={14} className={`chevron-icon ${isPondDropdownOpen ? 'open' : ''}`} />
+                  </button>
+                  {isPondDropdownOpen && (
+                    <div className="custom-dropdown-menu" style={{ left: 0, right: 'auto' }}>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map((id) => (
+                        <div 
+                          key={id} 
+                          className={`custom-dropdown-item ${selectedPondId === id ? 'selected' : ''}`}
+                          onClick={() => {
+                            setSelectedPondId(id);
+                            setIsPondDropdownOpen(false);
+                          }}
+                        >
+                          Kolam {id < 10 ? `0${id}` : id}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Simulation Controls */}
@@ -427,7 +445,7 @@ function App() {
                 <div className="simulation-bar">
                   <span>Simulasi IoT:</span>
                   <button 
-                    className="sim-btn" 
+                    className="btn-control" 
                     onClick={() => {
                       setCurrentIndex(0);
                       setIsPlaying(false);
@@ -437,13 +455,13 @@ function App() {
                     <RotateCcw size={14} />
                   </button>
                   <button 
-                    className={`sim-btn ${isPlaying ? 'active' : ''}`}
+                    className={`btn-control ${isPlaying ? 'active' : ''}`}
                     onClick={() => setIsPlaying(!isPlaying)}
                   >
                     {isPlaying ? <Pause size={14} /> : <Play size={14} />}
                   </button>
                   <button 
-                    className="sim-btn"
+                    className="btn-control"
                     onClick={() => {
                       if (currentIndex < rawData.length - 1) {
                         setCurrentIndex(currentIndex + 1);
@@ -473,6 +491,7 @@ function App() {
           toggleTodo={toggleTodo}
         />
       )}
+      </div>
     </div>
   );
 }

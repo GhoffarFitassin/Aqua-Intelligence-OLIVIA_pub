@@ -13,16 +13,15 @@ const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
       <div className="sidebar-logo">
         <img 
           src="/Gemini_Generated_Image_3d20fx3d20fx3d20.png" 
-          alt="Aqua-Intelligence Logo" 
+          alt="Lele Dumbo Logo" 
           style={{
             width: '36px',
             height: '36px',
             objectFit: 'contain',
             borderRadius: '50%',
-            border: '2px solid var(--border-color)',
+            border: '1px solid var(--colors-hairline)',
             padding: '2px',
-            filter: theme === 'dark' ? 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.6))' : 'none',
-            transition: 'filter 0.3s ease'
+            transition: 'var(--transition-all)'
           }}
         />
       </div>

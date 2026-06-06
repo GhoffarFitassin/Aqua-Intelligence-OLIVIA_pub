@@ -35,7 +35,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
     <div className="tab-page home-page">
       <div className="welcome-banner-home">
         <div className="welcome-text">
-          <h2>Selamat Datang Kembali, Pak Fii! 👋</h2>
+          <h2>Selamat datang kembali, Pak Fii! 👋</h2>
           {isPondCritical ? (
             <p>Kondisi pertanian Anda stabil, namun <strong>Kolam {selectedPondId}</strong> memerlukan tindakan segera terkait kadar oksigen terlarut/amonia!</p>
           ) : isPondWarning ? (
@@ -85,7 +85,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
           <div className="card-header-advisory">
             <CloudRain size={28} className="weather-icon" />
             <div>
-              <h3>Rekomendasi Cuaca & Pakan AI</h3>
+              <h3>Rekomendasi cuaca & pakan AI.</h3>
               <p>Prakiraan: Hujan Sedang Sore Hari</p>
             </div>
           </div>
@@ -109,7 +109,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
             animationDelay: '0.25s' 
           }}
         >
-          <h3>Pintasan Cepat</h3>
+          <h3>Pintasan cepat.</h3>
           <div className="actions-list">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
@@ -144,7 +144,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h3>Ringkasan Status Kolam Aktif</h3>
+          <h3>Ringkasan status kolam aktif.</h3>
           <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>*Klik baris kolam untuk memantau langsung</span>
         </div>
         <div className="table-responsive">

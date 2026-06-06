@@ -6,7 +6,7 @@ const Timeline = () => {
   return (
     <div className="card card-timeline">
       <div className="card-timeline-header">
-        <h3>Timeline & Log Kejadian</h3>
+        <h3>Timeline & log kejadian.</h3>
         <div className="timeline-date">
           <Calendar size={14} />
           <span>Mei 2026</span>

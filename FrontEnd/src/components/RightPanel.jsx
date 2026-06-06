@@ -41,7 +41,7 @@ const RightPanel = ({ currentData, statusInfo, todos, toggleTodo }) => {
   return (
     <aside className="right-panel">
       <div className="panel-section">
-        <h3>Notifikasi Sistem</h3>
+        <h3>Notifikasi sistem.</h3>
         <div className="notification-list">
           {notifications.map((notif, index) => (
             <div 
@@ -68,7 +68,7 @@ const RightPanel = ({ currentData, statusInfo, todos, toggleTodo }) => {
       </div>
 
       <div className="panel-section">
-        <h3>AI Actionable Insights</h3>
+        <h3>AI Actionable Insights.</h3>
         <div className="todo-list">
           {todos.length === 0 ? (
             <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', textAlign: 'center' }}>
