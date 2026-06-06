@@ -17,8 +17,7 @@ const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, the
     time: row.created_at.split(' ')[1] || row.created_at,
     value: parseFloat(row[currentMetricType] || 0),
     temperature: parseFloat(row.TEMPERATURE || 0),
-    DO: parseFloat(row.DO || 0),
-    ammonia: parseFloat(row.AMMONIA || 0),
+    turbidity: parseFloat(row.TURBIDITY || 0),
     pH: parseFloat(row.pH || 0)
   }));
 
@@ -42,7 +41,12 @@ const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, the
   };
 
   // Donut chart data - e.g. safe vs warning/danger data point distribution in history
-  const safeCount = latestRows.filter(r => parseFloat(r.DO) > 4.0 && parseFloat(r.AMMONIA) < 0.1).length;
+  const safeCount = latestRows.filter(r => {
+    const temp = parseFloat(r.TEMPERATURE || 0);
+    const ph = parseFloat(r.pH || 0);
+    const turb = parseFloat(r.TURBIDITY || 0);
+    return temp >= 26.0 && temp <= 30.0 && ph >= 6.5 && ph <= 8.5 && turb <= 250;
+  }).length;
   const safePercentage = Math.round((safeCount / latestRows.length) * 100) || 100;
   const warningPercentage = 100 - safePercentage;
 
@@ -113,10 +117,9 @@ const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, the
               cursor: 'pointer'
             }}
           >
-            <option value="DO">DO (Oksigen)</option>
             <option value="TEMPERATURE">Temperature (Suhu)</option>
-            <option value="AMMONIA">Ammonia</option>
             <option value="pH">pH</option>
+            <option value="TURBIDITY">Turbidity (Kekeruhan)</option>
           </select>
         </div>
         

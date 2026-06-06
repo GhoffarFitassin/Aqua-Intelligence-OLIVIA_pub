@@ -42,7 +42,7 @@ function App() {
   const [rawData, setRawData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentMetricType, setCurrentMetricType] = useState('DO');
+  const [currentMetricType, setCurrentMetricType] = useState('TEMPERATURE');
   const [todos, setTodos] = useState([]);
   const [themeSetting, setThemeSetting] = useState(() => {
     return localStorage.getItem('themeSetting') || localStorage.getItem('theme') || 'system';
@@ -85,6 +85,11 @@ function App() {
 
   useEffect(() => {
     document.body.className = theme === 'light' ? 'light-theme' : 'dark-theme';
+    // Dynamic favicon updates based on active theme
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon) {
+      favicon.href = theme === 'light' ? '/favicon-light.svg' : '/favicon-dark.svg';
+    }
   }, [theme]);
 
   // Load and parse the CSV data
@@ -101,7 +106,7 @@ function App() {
           skipEmptyLines: true,
           complete: (results) => {
             // Clean up and normalize properties
-            const cleanedData = results.data.map((row) => {
+            const cleanedData = results.data.map((row, idx) => {
               const getVal = (keys) => {
                 for (const key of keys) {
                   if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
@@ -122,18 +127,24 @@ function App() {
                 return 0;
               };
 
+              // Simulated rearing day (assuming ~1 minute per row, dataset spans ~57 days / 83k rows)
+              const day = Math.floor(idx / 1440);
+              const simulatedWeight = 5 + (245 * Math.pow(day / 58, 2));
+              const simulatedLength = 5 + (25 * Math.pow(day / 58, 0.7));
+              const simulatedPopulation = 10000 - Math.floor(day * 3.5);
+
               return {
                 created_at: row.created_at || '',
                 entry_id: row.entry_id || '',
                 TEMPERATURE: getVal(['TEMPERATURE', 'Temperature (C)']),
-                TURBIDITY: getVal(['TURBIDITY', 'Turbidity (NTU)']),
+                TURBIDITY: getVal(['TURBIDITY', 'Turbidity (NTU)', 'Turbidity(NTU)']),
                 DO: getVal(['DISOLVED OXYGEN', 'Dissolved Oxygen(g/ml)', 'DO']),
                 pH: getVal(['pH', 'PH']),
                 AMMONIA: getVal(['AMMONIA', 'Ammonia(g/ml)']),
                 NITRATE: getVal(['NITRATE', 'Nitrate(g/ml)']),
-                Population: getIntVal(['Population']),
-                Length: getVal(['Length', 'Fish_Length (cm)']),
-                Weight: getVal(['Weight', 'Fish_Weight (g)'])
+                Population: getIntVal(['Population']) || simulatedPopulation,
+                Length: getVal(['Length', 'Fish_Length (cm)']) || parseFloat(simulatedLength.toFixed(1)),
+                Weight: getVal(['Weight', 'Fish_Weight (g)']) || parseFloat(simulatedWeight.toFixed(1))
               };
             });
             setRawData(cleanedData);
@@ -149,36 +160,34 @@ function App() {
   const getPondStatus = () => {
     if (!currentData) return { type: 'success', text: 'Mengambil data...', title: 'SEDANG MEMUAT' };
 
-    const doVal = currentData.DO;
-    const ammoniaVal = currentData.AMMONIA;
     const tempVal = currentData.TEMPERATURE;
-    const nitrateVal = currentData.NITRATE;
     const pHVal = currentData.pH;
+    const turbVal = currentData.TURBIDITY;
 
-    // Skenario A: DO rendah (hypoxia) ATAU Ammonia kritis
-    if (doVal <= 2.0 || ammoniaVal > 0.0005) {
+    // Skenario A: pH ekstrim (sangat asam atau basa) ATAU tingkat kekeruhan kritis
+    if (pHVal < 6.0 || pHVal > 9.0 || turbVal > 300) {
       return {
         type: 'danger',
         title: '🔴 BAHAYA KRITIS',
-        text: 'Oksigen (DO) drop atau tingkat Ammonia/Nitrat beracun! Nyalakan aerator darurat segera.',
+        text: 'Keasaman air (pH) tidak aman atau kekeruhan air terlalu tinggi! Lakukan sifon air kolam segera.',
         actionList: [
-          { id: 1, text: `Segera hidupkan aerator maksimal di Kolam ${selectedPondId}.`, checked: false },
-          { id: 2, text: 'Lakukan pergantian air (Sifon) dasar kolam sebesar 30%.', checked: false },
-          { id: 3, text: 'Puasakan ikan (jangan beri pakan) selama 24 jam untuk menekan amonia.', checked: false }
+          { id: 1, text: `Lakukan pergantian air (Sifon) dasar kolam sebesar 30% di Kolam ${selectedPondId}.`, checked: false },
+          { id: 2, text: 'Taburkan kapur Dolomit secukupnya jika air terlalu asam (pH < 6.0).', checked: false },
+          { id: 3, text: 'Puasakan ikan (jangan beri pakan) sementara untuk menstabilkan kualitas air.', checked: false }
         ]
       };
     }
 
-    // Skenario B: Suhu dingin/fluktuatif (potensi Upwelling) ATAU pH asam
-    if (tempVal < 27.05 || pHVal < 6.05 || nitrateVal > 250) {
+    // Skenario B: Suhu dingin/fluktuatif ATAU pH mendekati batas asam
+    if (tempVal < 26.0 || tempVal > 31.0 || (pHVal >= 6.0 && pHVal < 6.5) || turbVal > 250) {
       return {
         type: 'warning',
-        title: '🟡 WASPADA UPWELLING',
-        text: 'Suhu dingin atau pH asam terdeteksi. Risiko kotoran naik dari dasar kolam.',
+        title: '🟡 WASPADA PARAMETER',
+        text: 'Suhu air dingin atau pH mendekati batas asam terdeteksi. Risiko kotoran naik dari dasar kolam.',
         actionList: [
-          { id: 1, text: 'Periksa penumpukan lumpur organik di dasar kolam.', checked: false },
-          { id: 2, text: 'Taburkan kapur Dolomit secukupnya untuk menaikkan pH.', checked: false },
-          { id: 3, text: 'Pertimbangkan pemberian probiotik air untuk menstabilkan bakteri pengurai.', checked: false }
+          { id: 1, text: 'Periksa sistem sirkulasi air dan tingkatkan aerasi.', checked: false },
+          { id: 2, text: 'Pertimbangkan pemberian probiotik air untuk menstabilkan penguraian lumpur.', checked: false },
+          { id: 3, text: 'Kurangi takaran pakan sore hari sebesar 20% untuk menghindari sisa pakan.', checked: false }
         ]
       };
     }
@@ -314,27 +323,21 @@ function App() {
             {/* Quick Metrics Bar */}
             <div className="metrics-summary">
               <div className="metric-mini-card">
-                <span className="label">DO (Oxygen)</span>
-                <span className={`value ${currentData.DO <= 2.0 ? 'danger' : 'success'}`}>
-                  {currentData.DO.toFixed(2)} mg/L
-                </span>
-              </div>
-              <div className="metric-mini-card">
-                <span className="label">Ammonia (NH3)</span>
-                <span className={`value ${currentData.AMMONIA > 0.0005 ? 'danger' : 'success'}`}>
-                  {currentData.AMMONIA.toFixed(5)}
-                </span>
-              </div>
-              <div className="metric-mini-card">
                 <span className="label">Suhu Air</span>
-                <span className={`value ${currentData.TEMPERATURE < 27.05 ? 'warning' : 'success'}`}>
+                <span className={`value ${currentData.TEMPERATURE < 26.0 || currentData.TEMPERATURE > 31.0 ? 'warning' : 'success'}`}>
                   {currentData.TEMPERATURE.toFixed(2)}°C
                 </span>
               </div>
               <div className="metric-mini-card">
                 <span className="label">Keasaman (pH)</span>
-                <span className={`value ${currentData.pH < 6.05 ? 'warning' : 'success'}`}>
+                <span className={`value ${currentData.pH < 6.5 || currentData.pH > 8.5 ? 'warning' : 'success'}`}>
                   {currentData.pH.toFixed(2)}
+                </span>
+              </div>
+              <div className="metric-mini-card">
+                <span className="label">Kekeruhan (Turbidity)</span>
+                <span className={`value ${currentData.TURBIDITY > 250 ? 'warning' : 'success'}`}>
+                  {currentData.TURBIDITY.toFixed(1)} NTU
                 </span>
               </div>
             </div>
