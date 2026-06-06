@@ -11,7 +11,20 @@ const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <Fish size={32} />
+        <img 
+          src="/Gemini_Generated_Image_3d20fx3d20fx3d20.png" 
+          alt="Aqua-Intelligence Logo" 
+          style={{
+            width: '36px',
+            height: '36px',
+            objectFit: 'contain',
+            borderRadius: '50%',
+            border: '2px solid var(--border-color)',
+            padding: '2px',
+            filter: theme === 'dark' ? 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.6))' : 'none',
+            transition: 'filter 0.3s ease'
+          }}
+        />
       </div>
       <nav className="sidebar-menu">
         {menuItems.map((item) => {

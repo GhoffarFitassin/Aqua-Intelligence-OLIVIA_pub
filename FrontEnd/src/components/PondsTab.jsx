@@ -7,31 +7,31 @@ const PondsTab = ({ currentData, selectedPondId, setSelectedPondId, setActiveTab
 
   // Mock list of ponds
   const initialPonds = [
-    { id: 12, name: 'Kolam 12', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'SAFE', temp: '28.2°C', ph: '7.1', do: '4.5 mg/L', fcr: '1.15' },
-    { id: 11, name: 'Kolam 11', type: 'Tanah Tradisional', population: 15000, size: '8m x 10m', density: '187/m³', status: 'SAFE', temp: '28.5°C', ph: '7.2', do: '4.8 mg/L', fcr: '1.22' },
-    { id: 10, name: 'Kolam 10', type: 'Terpal Kotak', population: 8000, size: '4m x 6m', density: '166/m³', status: 'SAFE', temp: '29.0°C', ph: '7.4', do: '5.1 mg/L', fcr: '1.18' },
-    { id: 9, name: 'Kolam 09', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'WARNING', temp: '26.9°C', ph: '6.4', do: '4.2 mg/L', fcr: '1.28' },
-    { id: 8, name: 'Kolam 08', type: 'Bioflok Bulat D3', population: 9500, size: 'D: 3m, T: 1.2m', density: '134/m³', status: 'SAFE', temp: '28.2°C', ph: '7.1', do: '4.9 mg/L', fcr: '1.16' },
-    { id: 7, name: 'Kolam 07', type: 'Terpal Kotak', population: 12000, size: '6m x 6m', density: '166/m³', status: 'SAFE', temp: '28.0°C', ph: '7.0', do: '4.6 mg/L', fcr: '1.20' },
-    { id: 6, name: 'Kolam 06', type: 'Tanah Tradisional', population: 20000, size: '10m x 12m', density: '166/m³', status: 'SAFE', temp: '27.8°C', ph: '6.9', do: '4.4 mg/L', fcr: '1.25' },
-    { id: 5, name: 'Kolam 05', type: 'Bioflok Bulat D3', population: 10500, size: 'D: 3m, T: 1.2m', density: '148/m³', status: 'SAFE', temp: '28.4°C', ph: '7.3', do: '5.0 mg/L', fcr: '1.13' },
-    { id: 4, name: 'Kolam 04', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'WARNING', temp: '26.8°C', ph: '6.3', do: '4.1 mg/L', fcr: '1.30' },
-    { id: 3, name: 'Kolam 03', type: 'Terpal Kotak', population: 8000, size: '4m x 6m', density: '166/m³', status: 'SAFE', temp: '28.7°C', ph: '7.1', do: '4.7 mg/L', fcr: '1.19' },
-    { id: 2, name: 'Kolam 02', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'SAFE', temp: '28.1°C', ph: '7.2', do: '4.8 mg/L', fcr: '1.14' },
-    { id: 1, name: 'Kolam 01', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'SAFE', temp: '28.3°C', ph: '7.2', do: '4.9 mg/L', fcr: '1.15' }
+    { id: 12, name: 'Kolam 12', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'SAFE', temp: '28.2°C', ph: '7.1', turbidity: '100 NTU', fcr: '1.15' },
+    { id: 11, name: 'Kolam 11', type: 'Tanah Tradisional', population: 15000, size: '8m x 10m', density: '187/m³', status: 'SAFE', temp: '28.5°C', ph: '7.2', turbidity: '120 NTU', fcr: '1.22' },
+    { id: 10, name: 'Kolam 10', type: 'Terpal Kotak', population: 8000, size: '4m x 6m', density: '166/m³', status: 'SAFE', temp: '29.0°C', ph: '7.4', turbidity: '80 NTU', fcr: '1.18' },
+    { id: 9, name: 'Kolam 09', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'WARNING', temp: '26.9°C', ph: '6.4', turbidity: '150 NTU', fcr: '1.28' },
+    { id: 8, name: 'Kolam 08', type: 'Bioflok Bulat D3', population: 9500, size: 'D: 3m, T: 1.2m', density: '134/m³', status: 'SAFE', temp: '28.2°C', ph: '7.1', turbidity: '105 NTU', fcr: '1.16' },
+    { id: 7, name: 'Kolam 07', type: 'Terpal Kotak', population: 12000, size: '6m x 6m', density: '166/m³', status: 'SAFE', temp: '28.0°C', ph: '7.0', turbidity: '95 NTU', fcr: '1.20' },
+    { id: 6, name: 'Kolam 06', type: 'Tanah Tradisional', population: 20000, size: '10m x 12m', density: '166/m³', status: 'SAFE', temp: '27.8°C', ph: '6.9', turbidity: '110 NTU', fcr: '1.25' },
+    { id: 5, name: 'Kolam 05', type: 'Bioflok Bulat D3', population: 10500, size: 'D: 3m, T: 1.2m', density: '148/m³', status: 'SAFE', temp: '28.4°C', ph: '7.3', turbidity: '100 NTU', fcr: '1.13' },
+    { id: 4, name: 'Kolam 04', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'WARNING', temp: '26.8°C', ph: '6.3', turbidity: '140 NTU', fcr: '1.30' },
+    { id: 3, name: 'Kolam 03', type: 'Terpal Kotak', population: 8000, size: '4m x 6m', density: '166/m³', status: 'SAFE', temp: '28.7°C', ph: '7.1', turbidity: '90 NTU', fcr: '1.19' },
+    { id: 2, name: 'Kolam 02', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'SAFE', temp: '28.1°C', ph: '7.2', turbidity: '100 NTU', fcr: '1.14' },
+    { id: 1, name: 'Kolam 01', type: 'Bioflok Bulat D3', population: 10000, size: 'D: 3m, T: 1.2m', density: '141/m³', status: 'SAFE', temp: '28.3°C', ph: '7.2', turbidity: '98 NTU', fcr: '1.15' }
   ];
 
   // Map real-time data to selected pond dynamically
   const pondsWithData = initialPonds.map(pond => {
     if (pond.id === selectedPondId && currentData) {
-      const isCritical = currentData.DO <= 2.0 || currentData.AMMONIA > 0.0005;
-      const isWarning = currentData.TEMPERATURE < 27.05 || currentData.pH < 6.05;
+      const isCritical = currentData.pH < 6.0 || currentData.pH > 9.0 || currentData.TURBIDITY > 300;
+      const isWarning = currentData.TEMPERATURE < 26.0 || currentData.TEMPERATURE > 31.0 || (currentData.pH >= 6.0 && currentData.pH < 6.5) || currentData.TURBIDITY > 250;
       return {
         ...pond,
         status: isCritical ? 'DANGER' : isWarning ? 'WARNING' : 'SAFE',
         temp: `${currentData.TEMPERATURE.toFixed(1)}°C`,
         ph: currentData.pH.toFixed(1),
-        do: `${currentData.DO.toFixed(1)} mg/L`
+        turbidity: `${currentData.TURBIDITY.toFixed(0)} NTU`
       };
     }
     return pond;
@@ -148,8 +148,8 @@ const PondsTab = ({ currentData, selectedPondId, setSelectedPondId, setActiveTab
                 <span className="val">{pond.ph || '7.0'}</span>
               </div>
               <div className="sensor-read-item">
-                <span className="lbl">DO</span>
-                <span className="val">{pond.do}</span>
+                <span className="lbl">Kekeruhan</span>
+                <span className="val">{pond.turbidity}</span>
               </div>
             </div>
             
