@@ -48,13 +48,9 @@ const PondsTab = ({ currentData, selectedPondId, setSelectedPondId, setActiveTab
     <div className="tab-page ponds-page">
       <div className="ponds-header-row">
         <div>
-          <h2>Daftar Kolam Lele</h2>
+          <h2>Daftar kolam lele.</h2>
           <p>Kelola konfigurasi kolam, populasi tebar, dan status monitoring kualitas air.</p>
         </div>
-        <button className="btn-add-pond" onClick={() => alert('Fitur tambah kolam akan menghubungkan modul Laravel Controller untuk menyimpan data ke database.')}>
-          <Plus size={16} />
-          <span>Tambah Kolam</span>
-        </button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -95,6 +91,11 @@ const PondsTab = ({ currentData, selectedPondId, setSelectedPondId, setActiveTab
             🟢 Aman ({pondsWithData.filter(p => p.status === 'SAFE').length})
           </button>
         </div>
+
+        <button className="btn-add-pond" onClick={() => alert('Fitur tambah kolam akan menghubungkan modul Laravel Controller untuk menyimpan data ke database.')}>
+          <Plus size={16} />
+          <span>Tambah Kolam</span>
+        </button>
       </div>
 
       {/* Pond Grid */}

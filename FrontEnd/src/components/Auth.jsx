@@ -74,8 +74,8 @@ const Auth = ({ onLoginSuccess, theme }) => {
           <div className="auth-logo">
             <Fish size={32} />
           </div>
-          <h2>OLIVIA System</h2>
-          <p>Aqua-Intelligence & Harvest Failure Prevention</p>
+          <h2>Lele Dumbo.</h2>
+          <p>Sistem deteksi pencegahan gagal panen lele.</p>
         </div>
 
         {alert.message && (
@@ -127,7 +127,7 @@ const Auth = ({ onLoginSuccess, theme }) => {
           </div>
 
           <button type="submit" className="auth-submit-btn">
-            Masuk ke Dashboard
+            Masuk ke dashboard
           </button>
 
           <div className="auth-info-badge">

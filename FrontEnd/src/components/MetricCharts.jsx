@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -10,8 +11,19 @@ import {
   Pie, 
   Cell 
 } from 'recharts';
+import { ChevronDown } from 'lucide-react';
 
 const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, theme }) => {
+  const [isMetricDropdownOpen, setIsMetricDropdownOpen] = useState(false);
+  
+  const metricOptions = [
+    { value: 'TEMPERATURE', label: 'Temperature (Suhu)' },
+    { value: 'pH', label: 'pH (Keasaman)' },
+    { value: 'TURBIDITY', label: 'Turbidity (Kekeruhan)' }
+  ];
+  
+  const selectedOption = metricOptions.find(o => o.value === currentMetricType) || metricOptions[0];
+
   // Line chart data - use the latest rows (up to 15 entries)
   const lineChartData = latestRows.map((row) => ({
     time: row.created_at.split(' ')[1] || row.created_at,
@@ -23,21 +35,23 @@ const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, the
 
   // Skema warna dinamis untuk chart
   const colors = theme === 'light' ? {
-    safe: '#059669', // Emerald
-    warning: '#DC2626', // Red
-    accentSoft: '#0284C7', // Sky Blue
-    accentBright: '#0F766E', // Deep Teal
-    tooltipBg: '#E2ECE9', // Soft Clay Teal
-    tooltipText: '#0F172A',
-    tooltipBorder: 'rgba(20, 184, 166, 0.2)'
+    safe: '#0070f3', // Vercel Success Blue
+    warning: '#f5a623', // Amber Warning
+    danger: '#ee0000', // Red Danger
+    accentSoft: '#0070f3',
+    accentBright: '#171717',
+    tooltipBg: '#f5f5f5',
+    tooltipText: '#171717',
+    tooltipBorder: '#ebebeb'
   } : {
-    safe: '#10B981', // Teal/Green
-    warning: '#EF4444', // Red
-    accentSoft: '#38BDF8', // Sky Blue
-    accentBright: '#14B8A6', // Organic Teal
-    tooltipBg: '#070D12', // Midnight Marine
-    tooltipText: '#F8FAFC',
-    tooltipBorder: 'rgba(20, 184, 166, 0.15)'
+    safe: '#0070f3', // Vercel Success Blue
+    warning: '#f5a623', // Amber Warning
+    danger: '#ee0000', // Red Danger
+    accentSoft: '#0070f3',
+    accentBright: '#ffffff',
+    tooltipBg: '#1a1a1a',
+    tooltipText: '#ffffff',
+    tooltipBorder: '#222222'
   };
 
   // Donut chart data - e.g. safe vs warning/danger data point distribution in history
@@ -59,7 +73,7 @@ const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, the
     <>
       {/* Card 2: Leads (Donut Chart) */}
       <div className="card card-donut">
-        <h3>Proporsi Kesehatan Kolam</h3>
+        <h3>Proporsi kesehatan kolam.</h3>
         <div className="donut-chart-container">
           <ResponsiveContainer width="100%" height={160}>
             <PieChart>
@@ -103,24 +117,33 @@ const MetricCharts = ({ currentMetricType, setCurrentMetricType, latestRows, the
       {/* Card 3: Line Chart */}
       <div className="card card-line" style={{ gridColumn: 'span 4' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h3>Tren Parameter Sensor</h3>
-          <select 
-            value={currentMetricType} 
-            onChange={(e) => setCurrentMetricType(e.target.value)}
-            style={{
-              backgroundColor: 'var(--bg-sidebar)',
-              color: 'var(--color-text-primary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '4px',
-              padding: '2px 8px',
-              fontSize: '11px',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="TEMPERATURE">Temperature (Suhu)</option>
-            <option value="pH">pH</option>
-            <option value="TURBIDITY">Turbidity (Kekeruhan)</option>
-          </select>
+          <h3>Tren parameter sensor.</h3>
+          <div className="custom-dropdown-container">
+            <button 
+              className="custom-dropdown-trigger" 
+              onClick={() => setIsMetricDropdownOpen(!isMetricDropdownOpen)}
+              style={{ minWidth: '160px' }}
+            >
+              <span>{selectedOption.label}</span>
+              <ChevronDown size={14} className={`chevron-icon ${isMetricDropdownOpen ? 'open' : ''}`} />
+            </button>
+            {isMetricDropdownOpen && (
+              <div className="custom-dropdown-menu">
+                {metricOptions.map((opt) => (
+                  <div 
+                    key={opt.value} 
+                    className={`custom-dropdown-item ${currentMetricType === opt.value ? 'selected' : ''}`}
+                    onClick={() => {
+                      setCurrentMetricType(opt.value);
+                      setIsMetricDropdownOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="line-chart-container">
