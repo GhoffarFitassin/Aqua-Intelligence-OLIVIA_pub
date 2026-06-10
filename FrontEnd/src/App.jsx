@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
-import Sidebar from './components/Sidebar';
-import RightPanel from './components/RightPanel';
-import MetricCharts from './components/MetricCharts';
-import Timeline from './components/Timeline';
-import HomeTab from './components/HomeTab';
-import PondsTab from './components/PondsTab';
-import AnalyticsTab from './components/AnalyticsTab';
-import ProfileTab from './components/ProfileTab';
-import Auth from './components/Auth';
+import Sidebar from './components/layout/Sidebar';
+import RightPanel from './components/layout/RightPanel';
+import MetricCharts from './components/ui/MetricCharts';
+import Timeline from './components/ui/Timeline';
+import HomeTab from './components/pages/HomeTab';
+import PondsTab from './components/pages/PondsTab';
+import AnalyticsTab from './components/pages/AnalyticsTab';
+import ProfileTab from './components/pages/ProfileTab';
+import Auth from './components/pages/Auth';
 import { 
   Play, 
   Pause, 
