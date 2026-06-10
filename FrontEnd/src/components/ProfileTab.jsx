@@ -35,7 +35,7 @@ const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, cu
     <div className="tab-page profile-page">
       <div className="profile-header-row">
         <div>
-          <h2>Profil & Pengaturan Sistem</h2>
+          <h2>Profil & pengaturan sistem.</h2>
           <p>Ubah identitas pengguna, sesuaikan nilai ambang batas sensor, dan lihat status API Laravel.</p>
         </div>
       </div>
@@ -45,7 +45,7 @@ const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, cu
         <div className="card profile-settings-card">
           <div className="card-header-icon">
             <User size={20} className="icon-blue" />
-            <h3>Identitas Peternak</h3>
+            <h3>Identitas peternak.</h3>
           </div>
 
           <form onSubmit={handleSave} style={{ marginTop: '20px' }}>
@@ -69,34 +69,28 @@ const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, cu
 
             <div className="form-group" style={{ marginTop: '15px' }}>
               <label>Mode Tampilan</label>
-              <div style={{ display: 'flex', gap: '15px', marginTop: '8px', flexWrap: 'wrap' }}>
-                <label className="radio-label">
-                  <input
-                    type="radio"
-                    name="themeSetting"
-                    checked={themeSetting === 'dark'}
-                    onChange={() => onChangeThemeSetting('dark')}
-                  />
-                  <span>Tema Gelap</span>
-                </label>
-                <label className="radio-label">
-                  <input
-                    type="radio"
-                    name="themeSetting"
-                    checked={themeSetting === 'light'}
-                    onChange={() => onChangeThemeSetting('light')}
-                  />
-                  <span>Tema Terang</span>
-                </label>
-                <label className="radio-label">
-                  <input
-                    type="radio"
-                    name="themeSetting"
-                    checked={themeSetting === 'system'}
-                    onChange={() => onChangeThemeSetting('system')}
-                  />
-                  <span>Ikuti Sistem</span>
-                </label>
+              <div className="filter-tags" style={{ marginTop: '8px' }}>
+                <button
+                  type="button"
+                  className={`filter-tag ${themeSetting === 'light' ? 'active' : ''}`}
+                  onClick={() => onChangeThemeSetting('light')}
+                >
+                  Tema Terang
+                </button>
+                <button
+                  type="button"
+                  className={`filter-tag ${themeSetting === 'dark' ? 'active' : ''}`}
+                  onClick={() => onChangeThemeSetting('dark')}
+                >
+                  Tema Gelap
+                </button>
+                <button
+                  type="button"
+                  className={`filter-tag ${themeSetting === 'system' ? 'active' : ''}`}
+                  onClick={() => onChangeThemeSetting('system')}
+                >
+                  Ikuti Sistem
+                </button>
               </div>
             </div>
 
@@ -118,7 +112,7 @@ const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, cu
         <div className="card profile-thresholds-card">
           <div className="card-header-icon">
             <Sliders size={20} className="icon-teal" />
-            <h3>Ambang Batas Pemicu AI (Alarm Thresholds)</h3>
+            <h3>Ambang batas pemicu AI.</h3>
           </div>
 
           <div className="thresholds-sliders-list" style={{ marginTop: '20px' }}>
@@ -193,7 +187,7 @@ const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, cu
       <div className="card integration-status-card" style={{ marginTop: '25px' }}>
         <div className="card-header-icon">
           <Database size={20} style={{ color: '#F59E0B' }} />
-          <h3>Sinkronisasi Backend Laravel & Database</h3>
+          <h3>Sinkronisasi backend Laravel & database.</h3>
         </div>
 
         <div className="integration-status-row" style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
@@ -213,7 +207,7 @@ const ProfileTab = ({ theme, themeSetting, onChangeThemeSetting, toggleTheme, cu
             </div>
           </div>
 
-          <button className="sim-btn" onClick={() => alert('Mengambil data sensor terbaru dari Laravel endpoint...')}>
+          <button className="btn-control" onClick={() => alert('Mengambil data sensor terbaru dari Laravel endpoint...')}>
             Uji Koneksi API
           </button>
         </div>

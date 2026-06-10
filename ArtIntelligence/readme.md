@@ -1,0 +1,1 @@
+ai, ngolah dataset

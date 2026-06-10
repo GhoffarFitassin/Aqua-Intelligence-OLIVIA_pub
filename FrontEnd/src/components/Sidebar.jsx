@@ -11,7 +11,19 @@ const Sidebar = ({ activeTab, setActiveTab, theme, toggleTheme }) => {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <Fish size={32} />
+        <img 
+          src="/Gemini_Generated_Image_3d20fx3d20fx3d20.png" 
+          alt="Lele Dumbo Logo" 
+          style={{
+            width: '36px',
+            height: '36px',
+            objectFit: 'contain',
+            borderRadius: '50%',
+            border: '1px solid var(--colors-hairline)',
+            padding: '2px',
+            transition: 'var(--transition-all)'
+          }}
+        />
       </div>
       <nav className="sidebar-menu">
         {menuItems.map((item) => {

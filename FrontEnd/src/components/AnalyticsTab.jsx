@@ -11,10 +11,11 @@ import {
   Line, 
   CartesianGrid 
 } from 'recharts';
-import { Sparkles, Calendar, TrendingUp, Info } from 'lucide-react';
+import { Sparkles, Calendar, TrendingUp, Info, ChevronDown } from 'lucide-react';
 
 const AnalyticsTab = ({ currentData, theme }) => {
   const [modelType, setModelType] = useState('LSTM');
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
 
   // Simulated growth data for the next 6 weeks (based on LSTM projection)
   const growthProjection = [
@@ -28,28 +29,28 @@ const AnalyticsTab = ({ currentData, theme }) => {
   ];
 
   const colors = theme === 'light' ? {
-    actual: '#0284C7', // Sky Blue
-    target: '#64748B', // Muted
-    predicted: '#0D9488', // Deep Teal
-    tooltipBg: '#E2ECE9',
-    tooltipBorder: 'rgba(20, 184, 166, 0.2)',
-    tooltipText: '#0F172A',
-    gridColor: '#E2E8F0'
+    actual: '#0070f3', // Vercel success blue
+    target: '#a1a1a1', // Hairline Strong gray
+    predicted: '#50e3c2', // Mint Cyan
+    tooltipBg: '#f5f5f5',
+    tooltipBorder: '#ebebeb',
+    tooltipText: '#171717',
+    gridColor: '#ebebeb'
   } : {
-    actual: '#38BDF8', // Sky Blue
-    target: '#64748B', // Muted
-    predicted: '#5DF8D8', // Bright Mint
-    tooltipBg: '#070D12',
-    tooltipBorder: 'rgba(20, 184, 166, 0.15)',
-    tooltipText: '#F8FAFC',
-    gridColor: 'rgba(255, 255, 255, 0.05)'
+    actual: '#0070f3', // Vercel success blue
+    target: '#444444', // Dark hairline strong gray
+    predicted: '#50e3c2', // Mint Cyan
+    tooltipBg: '#1a1a1a',
+    tooltipBorder: '#222222',
+    tooltipText: '#ffffff',
+    gridColor: '#222222'
   };
 
   return (
     <div className="tab-page analytics-page">
       <div className="analytics-header-row">
         <div>
-          <h2>Pertumbuhan & Analitik FCR</h2>
+          <h2>Pertumbuhan & analitik FCR.</h2>
           <p>Prediksi bobot biomassa lele, performa konversi pakan, dan estimasi waktu panen menggunakan model LSTM.</p>
         </div>
         
@@ -57,14 +58,37 @@ const AnalyticsTab = ({ currentData, theme }) => {
         <div className="ai-model-selector-bar">
           <Sparkles size={14} className="sparkle-icon" />
           <span>Model AI:</span>
-          <select 
-            value={modelType} 
-            onChange={(e) => setModelType(e.target.value)}
-            className="model-select-dropdown"
-          >
-            <option value="LSTM">LSTM (Waktu-Deret Proyeksi)</option>
-            <option value="XGBoost">XGBoost (Klasifikasi Kesehatan)</option>
-          </select>
+          <div className="custom-dropdown-container">
+            <button 
+              className="custom-dropdown-trigger" 
+              onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+            >
+              <span>{modelType === 'LSTM' ? 'LSTM (Waktu-Deret Proyeksi)' : 'XGBoost (Klasifikasi Kesehatan)'}</span>
+              <ChevronDown size={14} className={`chevron-icon ${isModelDropdownOpen ? 'open' : ''}`} />
+            </button>
+            {isModelDropdownOpen && (
+              <div className="custom-dropdown-menu">
+                <div 
+                  className={`custom-dropdown-item ${modelType === 'LSTM' ? 'selected' : ''}`}
+                  onClick={() => {
+                    setModelType('LSTM');
+                    setIsModelDropdownOpen(false);
+                  }}
+                >
+                  LSTM (Waktu-Deret Proyeksi)
+                </div>
+                <div 
+                  className={`custom-dropdown-item ${modelType === 'XGBoost' ? 'selected' : ''}`}
+                  onClick={() => {
+                    setModelType('XGBoost');
+                    setIsModelDropdownOpen(false);
+                  }}
+                >
+                  XGBoost (Klasifikasi Kesehatan)
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -126,7 +150,7 @@ const AnalyticsTab = ({ currentData, theme }) => {
       <div className="card analytics-chart-card">
         <div className="chart-card-header">
           <div>
-            <h3>Kurva Pertumbuhan Bobot Lele (Weight)</h3>
+            <h3>Kurva pertumbuhan bobot lele (weight).</h3>
             <p>Membandingkan berat aktual (sensor/biometrik) vs target ideal vs prediksi LSTM.</p>
           </div>
           <div className="chart-legend-custom">
@@ -191,7 +215,7 @@ const AnalyticsTab = ({ currentData, theme }) => {
       {/* Secondary Chart: Length Growth */}
       <div className="home-main-grid">
         <div className="card analytics-half-card">
-          <h3>Kurva Panjang Ikan (Length)</h3>
+          <h3>Kurva panjang ikan (length).</h3>
           <div className="analytics-chart-container" style={{ height: '200px', marginTop: '15px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={growthProjection} margin={{ top: 5, right: 5, left: -25, bottom: 5 }}>
@@ -232,7 +256,7 @@ const AnalyticsTab = ({ currentData, theme }) => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <Info size={24} className="info-icon" style={{ color: colors.actual }} />
             <div>
-              <h3>Catatan Algoritma AI</h3>
+              <h3>Catatan algoritma AI.</h3>
               <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginTop: '5px', lineHeight: '1.5' }}>
                 Model prediktif dijalankan secara asinkron dari backend Laravel dengan scheduler setiap jam ke engine Python ML. 
               </p>

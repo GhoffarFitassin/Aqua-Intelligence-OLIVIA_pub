@@ -1,8 +1,8 @@
 import { Fish, Thermometer, ShieldAlert, CloudRain, Calendar, Plus, FileText, ClipboardList } from 'lucide-react';
 
 const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelectedPondId }) => {
-  const isPondCritical = currentData?.DO <= 2.0 || currentData?.AMMONIA > 0.0005;
-  const isPondWarning = currentData?.TEMPERATURE < 27.05 || currentData?.pH < 6.05;
+  const isPondCritical = currentData?.pH < 6.0 || currentData?.pH > 9.0 || currentData?.TURBIDITY > 300;
+  const isPondWarning = currentData?.TEMPERATURE < 26.0 || currentData?.TEMPERATURE > 31.0 || (currentData?.pH >= 6.0 && currentData?.pH < 6.5) || currentData?.TURBIDITY > 250;
 
   // Dynamic farm stats overview
   const farmStats = [
@@ -25,17 +25,17 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
 
   // List of active ponds to display in home overview
   const activePondsList = [
-    { id: 12, name: 'Kolam 12', type: 'Bioflok Bulat D3', population: '10.000 Ekor', defaultTemp: 28.2, defaultPh: 7.1, defaultDo: 4.5 },
-    { id: 11, name: 'Kolam 11', type: 'Tanah Tradisional', population: '15.000 Ekor', defaultTemp: 28.5, defaultPh: 7.2, defaultDo: 4.8 },
-    { id: 10, name: 'Kolam 10', type: 'Terpal Kotak', population: '8.000 Ekor', defaultTemp: 29.0, defaultPh: 7.4, defaultDo: 5.1 },
-    { id: 9, name: 'Kolam 09', type: 'Bioflok Bulat D3', population: '10.000 Ekor', defaultTemp: 26.9, defaultPh: 6.4, defaultDo: 4.2 }
+    { id: 12, name: 'Kolam 12', type: 'Bioflok Bulat D3', population: '10.000 Ekor', defaultTemp: 28.2, defaultPh: 7.1, defaultTurbidity: 100 },
+    { id: 11, name: 'Kolam 11', type: 'Tanah Tradisional', population: '15.000 Ekor', defaultTemp: 28.5, defaultPh: 7.2, defaultTurbidity: 120 },
+    { id: 10, name: 'Kolam 10', type: 'Terpal Kotak', population: '8.000 Ekor', defaultTemp: 29.0, defaultPh: 7.4, defaultTurbidity: 80 },
+    { id: 9, name: 'Kolam 09', type: 'Bioflok Bulat D3', population: '10.000 Ekor', defaultTemp: 26.9, defaultPh: 6.4, defaultTurbidity: 150 }
   ];
 
   return (
     <div className="tab-page home-page">
       <div className="welcome-banner-home">
         <div className="welcome-text">
-          <h2>Selamat Datang Kembali, Pak Fii! 👋</h2>
+          <h2>Selamat datang kembali, Pak Fii! 👋</h2>
           {isPondCritical ? (
             <p>Kondisi pertanian Anda stabil, namun <strong>Kolam {selectedPondId}</strong> memerlukan tindakan segera terkait kadar oksigen terlarut/amonia!</p>
           ) : isPondWarning ? (
@@ -85,7 +85,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
           <div className="card-header-advisory">
             <CloudRain size={28} className="weather-icon" />
             <div>
-              <h3>Rekomendasi Cuaca & Pakan AI</h3>
+              <h3>Rekomendasi cuaca & pakan AI.</h3>
               <p>Prakiraan: Hujan Sedang Sore Hari</p>
             </div>
           </div>
@@ -109,7 +109,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
             animationDelay: '0.25s' 
           }}
         >
-          <h3>Pintasan Cepat</h3>
+          <h3>Pintasan cepat.</h3>
           <div className="actions-list">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
@@ -144,7 +144,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h3>Ringkasan Status Kolam Aktif</h3>
+          <h3>Ringkasan status kolam aktif.</h3>
           <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>*Klik baris kolam untuk memantau langsung</span>
         </div>
         <div className="table-responsive">
@@ -156,7 +156,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
                 <th>Kepadatan</th>
                 <th>Suhu Air</th>
                 <th>pH</th>
-                <th>DO</th>
+                <th>Kekeruhan</th>
                 <th>Status AI</th>
               </tr>
             </thead>
@@ -165,10 +165,10 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
                 const isSelected = pond.id === selectedPondId;
                 const temp = isSelected && currentData ? currentData.TEMPERATURE : pond.defaultTemp;
                 const ph = isSelected && currentData ? currentData.pH : pond.defaultPh;
-                const doVal = isSelected && currentData ? currentData.DO : pond.defaultDo;
+                const turbidity = isSelected && currentData ? currentData.TURBIDITY : pond.defaultTurbidity;
                 
-                const isCritical = doVal <= 2.0 || (isSelected && currentData?.AMMONIA > 0.0005);
-                const isWarning = temp < 27.05 || ph < 6.05;
+                const isCritical = ph < 6.0 || ph > 9.0 || turbidity > 300;
+                const isWarning = temp < 26.0 || temp > 31.0 || (ph >= 6.0 && ph < 6.5) || turbidity > 250;
                 const statusStr = isCritical ? 'BAHAYA' : isWarning ? 'WASPADA' : 'AMAN';
                 const badgeClass = isCritical ? 'danger' : isWarning ? 'warning' : 'success';
 
@@ -191,7 +191,7 @@ const HomeTab = ({ rawData, currentData, setActiveTab, selectedPondId, setSelect
                     <td>{temp.toFixed(1)}°C</td>
                     <td>{ph.toFixed(1)}</td>
                     <td className={isCritical ? 'text-danger font-bold' : badgeClass === 'warning' ? 'text-warning' : 'text-success'}>
-                      {doVal.toFixed(1)} mg/L
+                      {turbidity.toFixed(0)} NTU
                     </td>
                     <td>
                       <span className={`status-badge-inline ${badgeClass}`}>

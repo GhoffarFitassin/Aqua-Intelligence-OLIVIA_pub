@@ -18,10 +18,10 @@ const RightPanel = ({ currentData, statusInfo, todos, toggleTodo }) => {
       id: 1,
       type: statusInfo.type,
       text: statusInfo.type === 'danger'
-        ? `Sistem mendeteksi Oksigen Terlarut (DO) rendah (${currentData?.DO} mg/L). Golden time berjalan!`
+        ? `Sistem mendeteksi keasaman (pH: ${currentData?.pH}) tidak aman atau kekeruhan air tinggi (${currentData?.TURBIDITY} NTU).`
         : statusInfo.type === 'warning'
-          ? `Suhu terdeteksi turun (${currentData?.TEMPERATURE}°C) dan Nitrat tinggi. Waspada upwelling!`
-          : `Kondisi kolam terpantau optimal. Suhu ${currentData?.TEMPERATURE}°C, DO ${currentData?.DO} mg/L.`,
+          ? `Suhu terdeteksi dingin (${currentData?.TEMPERATURE}°C) atau kekeruhan tinggi (${currentData?.TURBIDITY} NTU). Waspada upwelling!`
+          : `Kondisi kolam terpantau optimal. Suhu ${currentData?.TEMPERATURE}°C, pH ${currentData?.pH}, Kekeruhan ${currentData?.TURBIDITY} NTU.`,
       time: 'Baru saja'
     },
     {
@@ -41,7 +41,7 @@ const RightPanel = ({ currentData, statusInfo, todos, toggleTodo }) => {
   return (
     <aside className="right-panel">
       <div className="panel-section">
-        <h3>Notifikasi Sistem</h3>
+        <h3>Notifikasi sistem.</h3>
         <div className="notification-list">
           {notifications.map((notif, index) => (
             <div 
@@ -68,7 +68,7 @@ const RightPanel = ({ currentData, statusInfo, todos, toggleTodo }) => {
       </div>
 
       <div className="panel-section">
-        <h3>AI Actionable Insights</h3>
+        <h3>AI Actionable Insights.</h3>
         <div className="todo-list">
           {todos.length === 0 ? (
             <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', textAlign: 'center' }}>
