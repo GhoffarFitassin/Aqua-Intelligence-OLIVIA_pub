@@ -4,11 +4,11 @@ import Sidebar from "./Components/Sidebar";
 import RightPanel from "./Components/RightPanel";
 import MetricCharts from "./Components/MetricCharts";
 import Timeline from "./Components/Timeline";
-import HomeTab from "./Components/HomeTab";
-import PondsTab from "./Components/PondsTab";
-import AnalyticsTab from "./Components/AnalyticsTab";
-import ProfileTab from "./Components/ProfileTab";
-import Auth from "./Components/Auth";
+import HomeTab from "./Pages/Home";
+import PondsTab from "./Pages/Ponds";
+import AnalyticsTab from "./Pages/Analytics";
+import ProfileTab from "./Pages/Profile";
+import Auth from "./Pages/Login";
 import {
     Play,
     Pause,
@@ -45,7 +45,7 @@ type TodoItem = {
 };
 
 type AppUser = {
-    email: string;
+    username: string;
     [key: string]: unknown;
 };
 
@@ -405,8 +405,8 @@ function App() {
                                 localStorage.getItem("aqua_users") || "[]",
                             ) as AppUser[];
                             const updatedUsers = users.map((u) =>
-                                u.email.toLowerCase() ===
-                                updatedUser.email.toLowerCase()
+                                u.username.toLowerCase() ===
+                                updatedUser.username.toLowerCase()
                                     ? updatedUser
                                     : u,
                             );

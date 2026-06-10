@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DashboardLayout from "@/Layouts/DashboardLayout";
 import MetricCharts from "@/Components/MetricCharts";
 import Timeline from "@/Components/Timeline";
-import HomeTab from "@/Components/HomeTab";
-import PondsTab from "@/Components/PondsTab";
-import AnalyticsTab from "@/Components/AnalyticsTab";
-import ProfileTab from "@/Components/ProfileTab";
-import Auth from "@/Components/Auth";
+import MetricMiniCard from "@/Components/MetricMiniCard";
+import HomeTab from "@/Pages/Home";
+import PondsTab from "@/Pages/Ponds";
+import AnalyticsTab from "@/Pages/Analytics";
+import ProfileTab from "@/Pages/Profile";
+import Auth from "@/Pages/Login";
 import {
     AlertTriangle,
     CheckCircle2,
@@ -92,38 +93,32 @@ export default function Dashboard() {
 
                 {/* Quick Metrics Bar */}
                 <div className="metrics-summary">
-                    <div className="metric-mini-card">
-                        <span className="label">DO (Oxygen)</span>
-                        <span
-                            className={`value ${currentData.DO <= 2 ? "danger" : "success"}`}
-                        >
-                            {currentData.DO.toFixed(2)} mg/L
-                        </span>
-                    </div>
-                    <div className="metric-mini-card">
-                        <span className="label">Ammonia (NH3)</span>
-                        <span
-                            className={`value ${currentData.AMMONIA > 0.0005 ? "danger" : "success"}`}
-                        >
-                            {currentData.AMMONIA.toFixed(5)}
-                        </span>
-                    </div>
-                    <div className="metric-mini-card">
-                        <span className="label">Suhu Air</span>
-                        <span
-                            className={`value ${currentData.TEMPERATURE < 27.05 ? "warning" : "success"}`}
-                        >
-                            {currentData.TEMPERATURE.toFixed(2)}°C
-                        </span>
-                    </div>
-                    <div className="metric-mini-card">
-                        <span className="label">Keasaman (pH)</span>
-                        <span
-                            className={`value ${currentData.pH < 6.05 ? "warning" : "success"}`}
-                        >
-                            {currentData.pH.toFixed(2)}
-                        </span>
-                    </div>
+                    <MetricMiniCard
+                        label="DO (Oxygen)"
+                        value={`${currentData.DO.toFixed(2)} mg/L`}
+                        status={currentData.DO <= 2 ? "danger" : "success"}
+                    />
+                    <MetricMiniCard
+                        label="Ammonia (NH3)"
+                        value={currentData.AMMONIA.toFixed(5)}
+                        status={
+                            currentData.AMMONIA > 0.0005 ? "danger" : "success"
+                        }
+                    />
+                    <MetricMiniCard
+                        label="Suhu Air"
+                        value={`${currentData.TEMPERATURE.toFixed(2)}°C`}
+                        status={
+                            currentData.TEMPERATURE < 27.05
+                                ? "warning"
+                                : "success"
+                        }
+                    />
+                    <MetricMiniCard
+                        label="Keasaman (pH)"
+                        value={currentData.pH.toFixed(2)}
+                        status={currentData.pH < 6.05 ? "warning" : "success"}
+                    />
                 </div>
 
                 {/* Grid layout */}
@@ -135,13 +130,10 @@ export default function Dashboard() {
                             <h2>FCR & Pertumbuhan Biometrik Ikan</h2>
                             <p>
                                 Populasi kolam terpantau{" "}
-                                <strong>
-                                    {currentData.Population} ekor
-                                </strong>{" "}
-                                lele. Saat ini, rata-rata panjang ikan
-                                mencapai{" "}
-                                <strong>{currentData.Length} cm</strong>{" "}
-                                dan berat mencapai{" "}
+                                <strong>{currentData.Population} ekor</strong>{" "}
+                                lele. Saat ini, rata-rata panjang ikan mencapai{" "}
+                                <strong>{currentData.Length} cm</strong> dan
+                                berat mencapai{" "}
                                 <strong>{currentData.Weight} g</strong>.
                             </p>
                         </div>
@@ -211,8 +203,8 @@ export default function Dashboard() {
                                 localStorage.getItem("aqua_users") || "[]",
                             ) as AppUser[];
                             const updatedUsers = users.map((u) =>
-                                u.email.toLowerCase() ===
-                                updatedUser.email.toLowerCase()
+                                u.username.toLowerCase() ===
+                                updatedUser.username.toLowerCase()
                                     ? updatedUser
                                     : u,
                             );
