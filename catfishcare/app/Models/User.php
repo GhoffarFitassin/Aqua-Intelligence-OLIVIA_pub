@@ -2,20 +2,42 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['username', 'jabatan', 'password'])]
+#[Hidden(['password'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
+    /**
+     * The accessors to append to the model's array form.
+     */
+    protected $appends = ['name', 'role'];
+
+    /**
+     * Map 'name' to the 'username' column for frontend compatibility.
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::get(fn() => $this->username);
+    }
+
+    /**
+     * Map 'role' to the 'jabatan' column for frontend compatibility.
+     */
+    protected function role(): Attribute
+    {
+        return Attribute::get(fn() => $this->jabatan);
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -25,7 +47,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

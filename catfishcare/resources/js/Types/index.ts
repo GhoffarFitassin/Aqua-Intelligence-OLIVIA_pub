@@ -26,7 +26,7 @@ export type TodoItem = {
 };
 
 export type AppUser = {
-    email: string;
+    username: string;
     name?: string;
     [key: string]: unknown;
 };

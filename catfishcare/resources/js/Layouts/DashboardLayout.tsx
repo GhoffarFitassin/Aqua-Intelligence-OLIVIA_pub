@@ -1,15 +1,10 @@
 import { useState, useEffect, type ReactNode } from "react";
 import Sidebar from "@/Components/Sidebar";
 import RightPanel from "@/Components/RightPanel";
-import type { TabName, TodoItem, SensorRow, StatusInfo } from "@/Types";
+import type { TabName, TodoItem, SensorRow } from "@/Types";
 import { useTheme } from "@/Hooks/useTheme";
 import { getPondStatus } from "@/Utils/statusLogic";
-import {
-    Play,
-    Pause,
-    SkipForward,
-    RotateCcw,
-} from "lucide-react";
+import { Play, Pause, SkipForward, RotateCcw } from "lucide-react";
 
 interface DashboardLayoutProps {
     children: ReactNode;
