@@ -12,4 +12,8 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
+Route::get('/esp', function () {
+    return Inertia::render('EspPage');
+})->name('esp');
+
 require __DIR__ . '/auth.php';
