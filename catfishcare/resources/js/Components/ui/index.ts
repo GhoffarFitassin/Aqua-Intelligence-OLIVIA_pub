@@ -5,3 +5,4 @@ export { default as SearchInput } from "./SearchInput";
 export { default as RadioGroup } from "./RadioGroup";
 export { default as RangeSlider } from "./RangeSlider";
 export { default as Select } from "./Select";
+export { default as Modal } from "./Modal";
