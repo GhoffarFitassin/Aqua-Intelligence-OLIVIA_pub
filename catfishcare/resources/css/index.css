@@ -2407,3 +2407,307 @@ body.light-theme .modal-dialog {
         justify-content: center;
     }
 }
+
+/* ==========================================================================
+   Global DataTable Component
+   ========================================================================== */
+
+.dt-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: modalOverlayIn 0.2s ease-out;
+}
+
+.dt-wrapper {
+    background-color: var(--bg-card-solid);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 960px;
+    max-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    animation: modalDialogIn 0.3s var(--transition-ease);
+    overflow: hidden;
+}
+
+.dt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.dt-title {
+    font-family: var(--font-title);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.dt-close-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.dt-close-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.dt-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    flex-shrink: 0;
+}
+
+.dt-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 14px;
+    flex: 1;
+    min-width: 0;
+    max-width: 320px;
+}
+
+.dt-search-icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.dt-search-box input {
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    width: 100%;
+    outline: none;
+}
+
+.dt-info-text {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.dt-table-scroll {
+    overflow: auto;
+    flex: 1 1 auto;
+    padding: 0 24px;
+}
+
+.dt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.dt-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bg-card-solid);
+}
+
+.dt-th,
+.dt-th-num,
+.dt-th-action {
+    padding: 12px 10px;
+    border-bottom: 2px solid var(--border-color);
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.dt-th-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.dt-th-sortable:hover {
+    color: var(--color-accent-soft);
+}
+
+.dt-th > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dt-sort-icon {
+    opacity: 0.35;
+    vertical-align: middle;
+}
+
+.dt-sort-icon.active {
+    opacity: 1;
+    color: var(--color-accent-soft);
+}
+
+.dt-td,
+.dt-td-num,
+.dt-td-action {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--color-text-primary);
+}
+
+.dt-td-num {
+    width: 40px;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.dt-th-num {
+    width: 40px;
+    text-align: center;
+}
+
+.dt-th-action,
+.dt-td-action {
+    width: 120px;
+    text-align: center;
+}
+
+.dt-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+body.light-theme .dt-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.dt-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+}
+
+.dt-act-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    transition: all 0.2s;
+    color: var(--color-text-muted);
+}
+
+.dt-act-view:hover {
+    color: var(--color-accent-soft);
+    border-color: var(--color-accent-soft);
+    background-color: rgba(56, 189, 248, 0.08);
+}
+
+.dt-act-edit:hover {
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+    background-color: rgba(245, 158, 11, 0.08);
+}
+
+.dt-act-delete:hover {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+    background-color: rgba(239, 68, 68, 0.08);
+}
+
+.dt-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.dt-page-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+    padding: 6px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.dt-page-btn:hover:not(:disabled) {
+    border-color: var(--color-accent-soft);
+    color: var(--color-accent-soft);
+}
+
+.dt-page-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.dt-page-info {
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+body.light-theme .dt-wrapper {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 600px) {
+    .dt-overlay {
+        padding: 12px;
+    }
+    .dt-wrapper {
+        max-width: 100%;
+    }
+    .dt-header {
+        padding: 16px 16px 12px;
+    }
+    .dt-toolbar {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+    }
+    .dt-table-scroll {
+        padding: 0 16px;
+    }
+    .dt-search-box {
+        max-width: 100%;
+    }
+    .dt-pagination {
+        padding: 10px 16px;
+    }
+}
