@@ -1487,7 +1487,7 @@ body.light-theme .timeline-icon-wrapper.icon-success {
   letter-spacing: 0.5px;
 }
 
-.form-group input[type="text"] {
+.form-group input[type="text"]:not(.auth-input) {
   background-color: var(--bg-sidebar);
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -1498,7 +1498,7 @@ body.light-theme .timeline-icon-wrapper.icon-success {
   transition: border-color var(--transition-speed);
 }
 
-.form-group input[type="text"]:focus {
+.form-group input[type="text"]:not(.auth-input):focus {
   border-color: var(--color-accent-soft);
 }
 
@@ -1979,6 +1979,10 @@ body.light-theme .auth-logo {
   transform: translateY(-50%);
   color: var(--color-text-muted);
   pointer-events: none;
+}
+
+.auth-input-wrapper .auth-input {
+  padding: 10px 14px 10px 38px;
 }
 
 .auth-input {
