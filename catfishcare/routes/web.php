@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Esp;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,7 +14,9 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 Route::get('/esp', function () {
-    return Inertia::render('EspPage');
+    return Inertia::render('EspPage', [
+        'espList' => Esp::orderBy('id')->get(),
+    ]);
 })->name('esp');
 
 require __DIR__ . '/auth.php';

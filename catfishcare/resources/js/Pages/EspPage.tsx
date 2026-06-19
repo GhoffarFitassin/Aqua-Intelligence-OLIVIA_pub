@@ -10,20 +10,29 @@ interface EspRecord {
     [key: string]: unknown;
 }
 
-const initialEspData: EspRecord[] = [
-    { id: 1, uuid: "ESP-28A4-B1F0-001" },
-    { id: 2, uuid: "ESP-28A4-B1F0-002" },
-    { id: 3, uuid: "ESP-28A4-B1F0-003" },
-    { id: 4, uuid: "ESP-7C9E-D3A2-004" },
-    { id: 5, uuid: "ESP-7C9E-D3A2-005" },
-];
+interface EspPageProps {
+    espList?: EspRecord[];
+}
 
-const EspPage = () => {
-    const [espList, setEspList] = useState<EspRecord[]>(initialEspData);
+const EspPage = ({ espList: initialData }: EspPageProps) => {
+    const [espList, setEspList] = useState<EspRecord[]>(initialData ?? []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEsp, setEditingEsp] = useState<EspRecord | null>(null);
     const [uuidValue, setUuidValue] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const refreshList = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch("/api/esp");
+            if (res.ok) setEspList(await res.json());
+        } catch (e) {
+            console.error("Gagal memuat data ESP:", e);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     const openAddModal = useCallback(() => {
         setEditingEsp(null);
@@ -43,39 +52,60 @@ const EspPage = () => {
         setUuidValue("");
     }, []);
 
-    const handleSubmit = useCallback(() => {
+    const handleSubmit = useCallback(async () => {
         if (!uuidValue.trim()) return;
         setIsSubmitting(true);
 
-        setTimeout(() => {
-            if (editingEsp) {
-                setEspList((prev) =>
-                    prev.map((esp) =>
-                        esp.id === editingEsp.id
-                            ? { ...esp, uuid: uuidValue.trim() }
-                            : esp,
-                    ),
-                );
-            } else {
-                const newId =
-                    espList.length > 0
-                        ? Math.max(...espList.map((e) => e.id)) + 1
-                        : 1;
-                setEspList((prev) => [
-                    ...prev,
-                    { id: newId, uuid: uuidValue.trim() },
-                ]);
-            }
-            setIsSubmitting(false);
-            closeModal();
-        }, 400);
-    }, [uuidValue, editingEsp, espList, closeModal]);
+        try {
+            const url = editingEsp ? `/api/esp/${editingEsp.id}` : "/api/esp";
+            const method = editingEsp ? "PUT" : "POST";
 
-    const handleDelete = useCallback((row: EspRecord) => {
-        if (window.confirm(`Hapus ESP "${row.uuid}"?`)) {
-            setEspList((prev) => prev.filter((esp) => esp.id !== row.id));
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uuid: uuidValue.trim() }),
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => null);
+                const msg =
+                    err?.errors?.uuid?.[0] ??
+                    err?.message ??
+                    "Terjadi kesalahan.";
+                alert(msg);
+                return;
+            }
+
+            await refreshList();
+            closeModal();
+        } catch (e) {
+            console.error("Gagal menyimpan ESP:", e);
+            alert("Gagal menyimpan data. Periksa koneksi dan coba lagi.");
+        } finally {
+            setIsSubmitting(false);
         }
-    }, []);
+    }, [uuidValue, editingEsp, closeModal, refreshList]);
+
+    const handleDelete = useCallback(
+        async (row: EspRecord) => {
+            if (!window.confirm(`Hapus ESP "${row.uuid}"?`)) return;
+
+            try {
+                const res = await fetch(`/api/esp/${row.id}`, {
+                    method: "DELETE",
+                });
+                if (!res.ok) {
+                    alert("Gagal menghapus data ESP.");
+                    return;
+                }
+                await refreshList();
+            } catch (e) {
+                console.error("Gagal menghapus ESP:", e);
+                alert("Gagal menghapus data. Periksa koneksi dan coba lagi.");
+            }
+        },
+        [refreshList],
+    );
 
     const columns: DataTableColumn<EspRecord>[] = [
         { key: "id", header: "ID", sortable: true },
@@ -128,7 +158,9 @@ const EspPage = () => {
                 <DataTable<EspRecord>
                     data={espList}
                     columns={columns}
-                    title="Daftar Perangkat ESP"
+                    title={
+                        isLoading ? "Memuat data..." : "Daftar Perangkat ESP"
+                    }
                     showRowNumber
                     showActions
                     onEdit={openEditModal}
@@ -143,7 +175,13 @@ const EspPage = () => {
                     onClose={closeModal}
                     title={editingEsp ? "Edit ESP" : "Tambah ESP Baru"}
                     onSubmit={handleSubmit}
-                    submitText={editingEsp ? "Simpan Perubahan" : "Tambah"}
+                    submitText={
+                        isSubmitting
+                            ? "Menyimpan..."
+                            : editingEsp
+                              ? "Simpan Perubahan"
+                              : "Tambah"
+                    }
                     isSubmitting={isSubmitting}
                     size="small"
                 >
